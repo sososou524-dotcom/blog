@@ -1,28 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllPosts, getAllTags, filterPosts, paginatePosts } from "../../lib/posts";
-
-const tag = Astro.url.searchParams.get("tag");
-const year = Astro.url.searchParams.get("year");
-const month = Astro.url.searchParams.get("month");
-const pageParam = Number(Astro.url.searchParams.get("page") ?? "1");
+import { getAllPosts, getAllTags } from "../../lib/posts";
 
 const allPosts = await getAllPosts();
 const allTags = await getAllTags();
-const filtered = filterPosts(allPosts, tag, year, month);
-const { items: posts, currentPage, totalPages } = paginatePosts(filtered, pageParam);
-
 const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYear())))].sort((a, b) => Number(b) - Number(a));
-
-function buildUrl(params: Record<string, string | null>) {
-  const p = new URLSearchParams();
-  const merged = { tag, year, month, page: null, ...params };
-  for (const [k, v] of Object.entries(merged)) {
-    if (v) p.set(k, v);
-  }
-  const qs = p.toString();
-  return `/posts/${qs ? "?" + qs : ""}`;
-}
 ---
 
 <BaseLayout title="記事一覧 | 砕けた水槽クラブ">
@@ -31,72 +13,144 @@ function buildUrl(params: Record<string, string | null>) {
 
     <section class="filter-section">
       <div class="tag-filter">
-        <a href={buildUrl({ tag: null })} class:list={["tag-btn", { active: !tag }]}>すべて</a>
+        <button class="tag-btn active" data-tag="">すべて</button>
         {allTags.map((t) => (
-          <a href={buildUrl({ tag: t })} class:list={["tag-btn", { active: tag === t }]}>{t}</a>
+          <button class="tag-btn" data-tag={t}>{t}</button>
         ))}
       </div>
-
       <div class="date-filter">
-        <select id="year-select" onchange="location.href=this.value">
-          <option value={buildUrl({ year: null, month: null })}>年を選択</option>
+        <select id="year-select">
+          <option value="">年を選択</option>
           {years.map((y) => (
-            <option value={buildUrl({ year: y, month: null })} selected={year === y}>{y}年</option>
+            <option value={y}>{y}年</option>
           ))}
         </select>
-        {year && (
-          <select id="month-select" onchange="location.href=this.value">
-            <option value={buildUrl({ month: null })}>月を選択</option>
-            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-              <option value={buildUrl({ month: m })} selected={month === m}>{Number(m)}月</option>
-            ))}
-          </select>
-        )}
+        <select id="month-select">
+          <option value="">月を選択</option>
+          {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+            <option value={String(m).padStart(2, "0")}>{m}月</option>
+          ))}
+        </select>
       </div>
     </section>
 
-    <p class="post-count">{filtered.length}件の記事</p>
+    <p class="post-count" id="post-count">{allPosts.length}件の記事</p>
 
-    {posts.length === 0 ? (
-      <p class="no-posts">該当する記事がありません。</p>
-    ) : (
-      <div class="card-grid">
-        {posts.map((post) => (
-          <a href={`/posts/${post.id}/`} class="card">
-            <div class="card-img">
-              {post.image ? (
-                <img src={post.image.url} alt={post.title} loading="lazy" />
-              ) : (
-                <div class="card-img-placeholder">📝</div>
-              )}
-            </div>
-            <div class="card-body">
-              <h2 class="card-title">{post.title}</h2>
-              <p class="card-date">{new Date(post.date).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}</p>
-              {post.description && <p class="card-desc">{post.description}</p>}
-              {(post.tags ?? []).length > 0 && (
-                <ul class="card-tags">
-                  {post.tags.map((t) => <li>{t}</li>)}
-                </ul>
-              )}
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
+    <div class="card-grid" id="card-grid">
+      {allPosts.map((post) => (
+        <a href={"/posts/" + post.id + "/"} class="card" data-tags={JSON.stringify(post.tags ?? [])} data-year={String(new Date(post.date).getFullYear())} data-month={String(new Date(post.date).getMonth() + 1).padStart(2, "0")}>
+          <div class="card-img">
+            {post.image ? (
+              <img src={post.image.url} alt={post.title} loading="lazy" />
+            ) : (
+              <div class="card-img-placeholder">📝</div>
+            )}
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">{post.title}</h2>
+            <p class="card-date">{new Date(post.date).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}</p>
+            {post.description && <p class="card-desc">{post.description}</p>}
+            {(post.tags ?? []).length > 0 && (
+              <ul class="card-tags">
+                {post.tags.map((t) => <li>{t}</li>)}
+              </ul>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
 
-    {totalPages > 1 && (
-      <nav class="pagination">
-        {currentPage > 1 && (
-          <a href={buildUrl({ page: String(currentPage - 1) })} class="page-btn">← 前へ</a>
-        )}
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-          <a href={buildUrl({ page: String(p) })} class:list={["page-btn", { current: p === currentPage }]}>{p}</a>
-        ))}
-        {currentPage < totalPages && (
-          <a href={buildUrl({ page: String(currentPage + 1) })} class="page-btn">次へ →</a>
-        )}
-      </nav>
-    )}
+    <p class="no-posts" id="no-posts" style="display:none;">該当する記事がありません。</p>
+
+    <nav class="pagination" id="pagination"></nav>
   </main>
 </BaseLayout>
+
+<script>
+const POSTS_PER_PAGE = 10;
+let currentTag = "";
+let currentYear = "";
+let currentMonth = "";
+let currentPage = 1;
+
+const cards = Array.from(document.querySelectorAll("#card-grid .card"));
+const noPosts = document.getElementById("no-posts");
+const postCount = document.getElementById("post-count");
+const pagination = document.getElementById("pagination");
+
+function getFiltered() {
+  return cards.filter((card) => {
+    const tags = JSON.parse(card.dataset.tags ?? "[]");
+    const year = card.dataset.year ?? "";
+    const month = card.dataset.month ?? "";
+    if (currentTag && !tags.includes(currentTag)) return false;
+    if (currentYear && year !== currentYear) return false;
+    if (currentMonth && month !== currentMonth) return false;
+    return true;
+  });
+}
+
+function render() {
+  const filtered = getFiltered();
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+  currentPage = Math.min(currentPage, totalPages);
+  const start = (currentPage - 1) * POSTS_PER_PAGE;
+  const visible = filtered.slice(start, start + POSTS_PER_PAGE);
+
+  cards.forEach((card) => (card.style.display = "none"));
+  visible.forEach((card) => (card.style.display = "flex"));
+
+  postCount.textContent = total + "件の記事";
+  noPosts.style.display = total === 0 ? "block" : "none";
+
+  pagination.innerHTML = "";
+  if (totalPages > 1) {
+    if (currentPage > 1) {
+      const btn = document.createElement("button");
+      btn.className = "page-btn";
+      btn.textContent = "← 前へ";
+      btn.onclick = () => { currentPage--; render(); };
+      pagination.appendChild(btn);
+    }
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.className = "page-btn" + (i === currentPage ? " current" : "");
+      btn.textContent = String(i);
+      btn.onclick = () => { currentPage = i; render(); };
+      pagination.appendChild(btn);
+    }
+    if (currentPage < totalPages) {
+      const btn = document.createElement("button");
+      btn.className = "page-btn";
+      btn.textContent = "次へ →";
+      btn.onclick = () => { currentPage++; render(); };
+      pagination.appendChild(btn);
+    }
+  }
+}
+
+document.querySelectorAll(".tag-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tag-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTag = btn.dataset.tag ?? "";
+    currentPage = 1;
+    render();
+  });
+});
+
+document.getElementById("year-select").addEventListener("change", (e) => {
+  currentYear = e.target.value;
+  currentPage = 1;
+  render();
+});
+
+document.getElementById("month-select").addEventListener("change", (e) => {
+  currentMonth = e.target.value;
+  currentPage = 1;
+  render();
+});
+
+render();
+</script>
