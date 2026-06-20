@@ -1,11 +1,38 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout bodyClass="page-home">
+  <main class="content wrapper">
+    <div class="box-caution">
+      <p>
+        私の未熟なHTMLとCSS（とJavaScript）の技術により、レイアウトが崩れている場合があります。<br />
+        本当に申し訳ございません。
+      </p>
+    </div>
+
+    <div class="alol">
+      <p class="big">※最終更新：２０２６年６月</p>
+      <p class="big">◎サイトについて</p>
+      <p class="sentences">
+        個人のサイト（ブログサイト...？）です。好きなことや思ったことについて語っています。<br />
+        何か気になることがありましたら、
+        <a href="https://discord.com/users/lowelt" target="_blank" rel="noreferrer">
+          Discordアカウント
+        </a>
+        、
+        <a href="https://twitter.com/SawaGani_gigi" target="_blank" rel="noreferrer">
+          Xアカウント
+        </a>
+        までご連絡ください。
+        <br />
+        このブログは基本は自分用ですが、少しでも誰かと共有できればいいとも思っています。
+        <br />
+        あらかじめご了承ください。
+      </p>
+      <a class="midashi" href="/introduce/">◎自己紹介ページ</a>
+      <p class="sentences">本当にしょうもないことしか書いてないです。</p>
+      <p class="big">◎お知らせ</p>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,52 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  date: Date;
+  description?: string;
+  updatedDate?: Date;
+  tags?: string[];
+}
+
+const { title, date, description, updatedDate, tags = [] } = Astro.props;
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+---
+
+<BaseLayout title={`${title} | 砕けた水槽クラブ`} description={description ?? title} bodyClass="page-post">
+  <main class="content wrapper">
+    <article class="alol post">
+      <a class="back-link" href="/posts/">記事一覧へ戻る</a>
+      <header class="post-header">
+        <h1 class="post-title">{title}</h1>
+        <p class="post-meta" style="text-align: left !important;">
+          公開日：<time datetime={date.toISOString()}>{formatDate(date)}</time>
+          {
+            updatedDate && (
+              <>
+                <br />
+                更新日：<time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+              </>
+            )
+          }
+        </p>
+        {
+          tags.length > 0 && (
+            <ul class="post-tags" aria-label="タグ">
+              {tags.map((tag) => <li>{tag}</li>)}
+            </ul>
+          )
+        }
+      </header>
+      <div class="post-body">
+        <slot />
+      </div>
+    </article>
+  </main>
+</BaseLayout>

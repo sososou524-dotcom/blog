@@ -1,0 +1,102 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, getAllTags, filterPosts, paginatePosts } from "../../lib/posts";
+
+const tag = Astro.url.searchParams.get("tag");
+const year = Astro.url.searchParams.get("year");
+const month = Astro.url.searchParams.get("month");
+const pageParam = Number(Astro.url.searchParams.get("page") ?? "1");
+
+const allPosts = await getAllPosts();
+const allTags = await getAllTags();
+const filtered = filterPosts(allPosts, tag, year, month);
+const { items: posts, currentPage, totalPages } = paginatePosts(filtered, pageParam);
+
+const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYear())))].sort((a, b) => Number(b) - Number(a));
+
+function buildUrl(params: Record<string, string | null>) {
+  const p = new URLSearchParams();
+  const merged = { tag, year, month, page: null, ...params };
+  for (const [k, v] of Object.entries(merged)) {
+    if (v) p.set(k, v);
+  }
+  const qs = p.toString();
+  return `/posts/${qs ? "?" + qs : ""}`;
+}
+---
+
+<BaseLayout title="記事一覧 | 砕けた水槽クラブ">
+  <main class="wrapper posts-page">
+    <h1 class="midashi">記事一覧</h1>
+
+    <section class="filter-section">
+      <div class="tag-filter">
+        <a href={buildUrl({ tag: null })} class:list={["tag-btn", { active: !tag }]}>すべて</a>
+        {allTags.map((t) => (
+          <a href={buildUrl({ tag: t })} class:list={["tag-btn", { active: tag === t }]}>{t}</a>
+        ))}
+      </div>
+
+      <div class="date-filter">
+        <select id="year-select" onchange="location.href=this.value">
+          <option value={buildUrl({ year: null, month: null })}>年を選択</option>
+          {years.map((y) => (
+            <option value={buildUrl({ year: y, month: null })} selected={year === y}>{y}年</option>
+          ))}
+        </select>
+        {year && (
+          <select id="month-select" onchange="location.href=this.value">
+            <option value={buildUrl({ month: null })}>月を選択</option>
+            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
+              <option value={buildUrl({ month: m })} selected={month === m}>{Number(m)}月</option>
+            ))}
+          </select>
+        )}
+      </div>
+    </section>
+
+    <p class="post-count">{filtered.length}件の記事</p>
+
+    {posts.length === 0 ? (
+      <p class="no-posts">該当する記事がありません。</p>
+    ) : (
+      <div class="card-grid">
+        {posts.map((post) => (
+          <a href={`/posts/${post.id}/`} class="card">
+            <div class="card-img">
+              {post.image ? (
+                <img src={post.image.url} alt={post.title} loading="lazy" />
+              ) : (
+                <div class="card-img-placeholder">📝</div>
+              )}
+            </div>
+            <div class="card-body">
+              <h2 class="card-title">{post.title}</h2>
+              <p class="card-date">{new Date(post.date).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}</p>
+              {post.description && <p class="card-desc">{post.description}</p>}
+              {(post.tags ?? []).length > 0 && (
+                <ul class="card-tags">
+                  {post.tags.map((t) => <li>{t}</li>)}
+                </ul>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    {totalPages > 1 && (
+      <nav class="pagination">
+        {currentPage > 1 && (
+          <a href={buildUrl({ page: String(currentPage - 1) })} class="page-btn">← 前へ</a>
+        )}
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <a href={buildUrl({ page: String(p) })} class:list={["page-btn", { current: p === currentPage }]}>{p}</a>
+        ))}
+        {currentPage < totalPages && (
+          <a href={buildUrl({ page: String(currentPage + 1) })} class="page-btn">次へ →</a>
+        )}
+      </nav>
+    )}
+  </main>
+</BaseLayout>

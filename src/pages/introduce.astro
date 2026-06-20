@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const ageText = String.raw`$\text{西暦 } Y\text{ 年の日付 } d \text{ における私の年齢 } \mathrm{Age}(Y)\text{ は次のように定義される。}$`;
+const ageFormula = String.raw`$$
+\mathrm{Age}(Y)=
+\begin{cases}
+Y-2011 & (d<9/28)\\
+Y-2010 & (d\geqq 9/28)
+\end{cases}
+$$`;
+---
+
+<BaseLayout math bodyClass="page-introduce">
+  <main class="content wrapper">
+    <div class="alol">
+      <h1 class="midashi">自己紹介</h1>
+      <p class="big">※最終更新：２０２６年６月</p>
+      <p class="big">◎プロフィール</p>
+      <p class="sentences">
+        名前：さわがに（※本名ではない）<br />
+        年齢：
+        <span set:html={ageText} />
+        <span set:html={ageFormula} />
+        趣味：後述<br />
+        好きなもの：後述<br />
+        苦手なもの：後述<br />
+      </p>
+
+      <p class="big">◎趣味</p>
+      <p class="sentences">
+        <strong>◯ポケモン対戦</strong>
+        <br />
+        最近はポケモン対戦ばかりやっています。
+        <br /><br />
+        マントGドガスを横に並べて、ゴテラいじA252珠レジギガスであらゆるものを握り潰してニヤニヤしていた時期が自分にもありましたが、チャンピオンズで内定しなかったので、今はTwitter（新X）で見つけた海外勢の構築を少し改造して使ってます。
+        <br /><br />
+        PJCSの予選で負けてからは対戦する頻度が減った気がします。
+        <br /><br /><br />
+        <strong>◯マンホールカード集め</strong>
+        <br />
+        2023年の春くらいから始めた趣味です。
+        <br />
+        市役所で配布されていたので受け取ってみたのがきっかけでした。
+        <br /><br />
+        周辺地域のカードを集めてまくったあと、一度飽きて辞めてしまったものの、なんだかんだで最近また集めてます。
+        <br /><br />
+        今は大体140種類くらい集まってます。
+      </p>
+
+      <p class="big">◎好きなこと</p>
+      <p class="sentences">
+        <strong>◯noteを読むこと</strong>
+        <br />
+        最近始めました。
+        <br /><br />
+        noteには色々な人がいます。自分と全く価値観の違う人、たくさんの挫折を経験してきた人、自分の信念を貫いて生きている人、誰にも言えない悩みを抱えている人。
+        <br /><br />
+        そういう人たちのnoteの記事を読むと、自分の世界が広がるような感覚があり、非常に面白いです。
+        <br /><br /><br />
+        <strong>◯新しいことを知ること</strong>
+        <br />
+        noteを読むこととも関連しますが、知らないことを知るのが好きです。
+        <br />
+        自分の知らない世界に足を踏み入れてみるのはすごくワクワクします()
+        <br /><br /><br />
+        <strong>◯日本茶を嗜むこと</strong>
+        <br />
+        2023年の夏くらいから始めました。
+        <br /><br />
+        最近は本格的に飲むようになり、毎日淹れることもあります。
+        <br /><br />
+        深蒸し煎茶が好きです。お茶を淹れる時間や抽出時間を変えながら、美味しいお茶の淹れ方を研究しています
+      </p>
+
+      <p class="big">◎苦手なこと</p>
+      <p class="sentences">
+        <strong>◯興味のないことを続けること</strong>
+        <br />
+        これはもう本当に苦手です。（みんなそうだと思うけど）
+        <br /><br />
+        興味のあることなら、気づいたら何時間も経ってた、なんてことがあるんですけどね（笑）
+        <br /><br /><br />
+        <strong>◯自分を説明すること</strong>
+        <br />
+        自己紹介を書いていても思いますが、自分が何を好きで何が趣味なのか、意外と上手く言葉にできません。
+      </p>
+    </div>
+  </main>
+
+  <hr class="footer-line" />
+  <footer class="footer wrapper">
+    <p class="foot">© 2026 砕けた水槽クラブ</p>
+  </footer>
+</BaseLayout>

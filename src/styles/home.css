@@ -1,0 +1,120 @@
+@charset "utf-8";
+
+html{
+  background-color: #eaedf7;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.comfort {
+  width: 100%;
+}
+
+a:link,
+a:visited {
+  color: #0075c2;
+  text-decoration: none;
+}
+
+a:hover,
+a:visited:hover {
+  color: #0bd;
+}
+
+.main {
+  margin: 0;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+  font-style: normal;
+  letter-spacing: 0.3em;
+  text-align: left;
+  color:  black;
+  padding: 25px;
+}
+
+header{
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.nav-home {
+  margin: 0;
+  font-family: "Zen Maru Gothic", sans-serif;
+  font-size: 1rem;
+  display: flex;
+  list-style: none;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  margin-right: 1.5rem;
+}
+
+hr {
+  height: 0.5px;
+  background-color: black;
+  border-radius: 3%;
+}
+
+.wrapper{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+
+.nav-home li {
+  margin-left: 40px;
+}
+
+.box-caution{
+    font-family: "Zen Maru Gothic", sans-serif;
+    padding: 1em;
+    margin: 25px;
+    width: fit-content;
+    border-radius: 10px;
+    background-color: white;
+    margin-right: auto;
+    margin-left: auto;
+    letter-spacing: 0.1em;
+}
+
+.alol{
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  padding: 1em;
+  margin: 0;
+  text-align: left;
+}
+
+.big{
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-size: 1.5rem;
+  font-style: normal;
+  letter-spacing: 0.15em;
+  font-weight: 400;
+  margin: 0;
+  margin-bottom: 5px;
+}
+
+.sentences{
+  font-family: "Zen Maru Gothic", sans-serif;
+    letter-spacing: 0.1rem;
+    margin: 0;
+    margin-bottom: 50px;
+    text-align: left;
+}
+
+.midashi {
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+  font-style: normal;
+  letter-spacing: 0.3em;
+  text-align: left;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 5px;
+}

@@ -1,0 +1,76 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  math?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title = "砕けた水槽クラブ",
+  description = "自由奔放人間",
+  math = false,
+  bodyClass = "",
+} = Astro.props;
+
+
+const faviconVersion = "lake-20260617";
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="shortcut icon" href={`/favicon.ico?v=${faviconVersion}`} type="image/x-icon" />
+    <link rel="icon" href={`/favicon.ico?v=${faviconVersion}`} type="image/x-icon" />
+    <link rel="icon" href={`/favicon.png?v=${faviconVersion}`} type="image/png" />
+    <link rel="apple-touch-icon" href={`/apple-touch-icon.png?v=${faviconVersion}`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    {
+      math && (
+        <>
+          <script is:inline>
+            window.MathJax = {
+              tex: {
+                inlineMath: [["$", "$"]],
+              },
+            };
+          </script>
+          <script
+            async
+            is:inline
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+          ></script>
+        </>
+      )
+    }
+  </head>
+  <body class={bodyClass}>
+    <header class="comfort wrapper">
+      <h1 class="main">
+        <a href="/">砕けた水槽クラブ</a>
+      </h1>
+      <nav aria-label="メインナビゲーション">
+        <ul class="nav-home">
+          <li><a href="/">ホーム</a></li>
+          <li><a href="/posts/">６次元限界集落</a></li>
+          <li><a href="/pk-blog/">A特化珠握りの会</a></li>
+        </ul>
+      </nav>
+    </header>
+    <hr id="center-line" />
+    <slot />
+  </body>
+</html>
