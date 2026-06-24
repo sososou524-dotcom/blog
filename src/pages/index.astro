@@ -1,12 +1,17 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getStatus } from "../lib/status";
+import { getAllNews } from "../lib/news";
+
+const status = await getStatus();
+const newsList = await getAllNews();
 ---
 
 <BaseLayout bodyClass="page-home">
   <main class="content wrapper">
     <div class="box-caution">
       <p>
-        私の未熟なHTMLとCSS（とJavaScript）の技術により、レイアウトが崩れている場合があります。<br />
+        私の未熟なCSSの技術により、レイアウトが崩れている場合があります。<br />
         本当に申し訳ございません。
       </p>
     </div>
@@ -30,9 +35,36 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <br />
         あらかじめご了承ください。
       </p>
-      <a class="midashi" href="/introduce/">◎自己紹介ページ</a>
+
+      <div class="status-box">
+        <p class="big">◎現在のステータス</p>
+        <p class="sentences" style="margin-bottom:10px;">時と場合によって変わります</p>
+        {status && status.message ? (
+          <p class="status-content">
+            {status.emoji && <span class="status-emoji">{status.emoji}</span>}
+            <span class="status-message">{status.message}</span>
+          </p>
+        ) : (
+          <p class="status-empty">現在ステータスはありません。</p>
+        )}
+      </div>
+
+      <a class="midashi" href="/introduce/" style="color :black;">◎自己紹介ページ</a>
       <p class="sentences">本当にしょうもないことしか書いてないです。</p>
+
       <p class="big">◎お知らせ</p>
+      {newsList.length > 0 ? (
+        <ul class="news-list">
+          {newsList.map((news) => (
+            <li class="news-item">
+              <span class="news-date">{new Date(news.date).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}</span>
+              <span class="news-message">{news.message}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="news-empty sentences">現在お知らせはありません。</p>
+      )}
     </div>
   </main>
 </BaseLayout>

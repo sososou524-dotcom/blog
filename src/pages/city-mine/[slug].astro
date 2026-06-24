@@ -1,0 +1,30 @@
+---
+import BlogLayout from "../../layouts/BlogLayout.astro";
+import { getAllCityMinePosts, getCityMinePostById } from "../../lib/citymine";
+
+export async function getStaticPaths() {
+  const posts = await getAllCityMinePosts();
+  return posts.map((post) => ({
+    params: { slug: post.id },
+  }));
+}
+
+const { slug } = Astro.params;
+const post = await getCityMinePostById(slug);
+---
+
+<BlogLayout
+  title={post.title}
+  date={new Date()}
+  description={post.description}
+  tags={post.tags}
+>
+  <div set:html={post.body} />
+
+  {post.image && (
+    <figure class="post-title-image">
+      <img src={post.image.url} alt={post.title} loading="lazy" />
+      <figcaption>タイトル画像</figcaption>
+    </figure>
+  )}
+</BlogLayout>

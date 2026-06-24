@@ -1,15 +1,14 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllPosts, getAllTags } from "../../lib/posts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllCityMinePosts, getAllCityMineTags } from "../lib/citymine";
 
-const allPosts = await getAllPosts();
-const allTags = await getAllTags();
-const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYear())))].sort((a, b) => Number(b) - Number(a));
+const allPosts = await getAllCityMinePosts();
+const allTags = await getAllCityMineTags();
 ---
 
-<BaseLayout title="記事一覧 | 砕けた水槽クラブ">
+<BaseLayout title="水紋都市鉱山| 砕けた水槽クラブ">
   <main class="wrapper posts-page">
-    <h1 class="midashi">記事一覧</h1>
+    <h1 class="midashi">水紋都市鉱山</h1>
 
     <section class="filter-section">
       <div class="tag-filter">
@@ -18,27 +17,13 @@ const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYea
           <button class="tag-btn" data-tag={t}>{t}</button>
         ))}
       </div>
-      <div class="date-filter">
-        <select id="year-select">
-          <option value="">年を選択</option>
-          {years.map((y) => (
-            <option value={y}>{y}年</option>
-          ))}
-        </select>
-        <select id="month-select">
-          <option value="">月を選択</option>
-          {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-            <option value={String(m).padStart(2, "0")}>{m}月</option>
-          ))}
-        </select>
-      </div>
     </section>
 
-    <p class="post-count" id="post-count">{allPosts.length}件の記事</p>
+    <p class="post-count" id="post-count">{allPosts.length}件</p>
 
     <div class="card-grid" id="card-grid">
       {allPosts.map((post) => (
-        <a href={"/posts/" + post.id + "/"} class="card" data-tags={JSON.stringify(post.tags ?? [])} data-year={String(new Date(post.date).getFullYear())} data-month={String(new Date(post.date).getMonth() + 1).padStart(2, "0")}>
+        <a href={"/city-mine/" + post.id + "/"} class="card" data-tags={JSON.stringify(post.tags ?? [])}>
           <div class="card-img">
             {post.image ? (
               <img src={post.image.url} alt={post.title} loading="lazy" />
@@ -48,7 +33,6 @@ const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYea
           </div>
           <div class="card-body">
             <h2 class="card-title">{post.title}</h2>
-            <p class="card-date">{new Date(post.date).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}</p>
             {post.description && <p class="card-desc">{post.description}</p>}
             {(post.tags ?? []).length > 0 && (
               <ul class="card-tags">
@@ -68,9 +52,7 @@ const years = [...new Set(allPosts.map((p) => String(new Date(p.date).getFullYea
 
 <script>
 const POSTS_PER_PAGE = 10;
-let currentTags = new Set();
-let currentYear = "";
-let currentMonth = "";
+let currentTag = "";
 let currentPage = 1;
 
 const cards = Array.from(document.querySelectorAll("#card-grid .card"));
@@ -81,11 +63,7 @@ const pagination = document.getElementById("pagination");
 function getFiltered() {
   return cards.filter((card) => {
     const tags = JSON.parse(card.dataset.tags ?? "[]");
-    const year = card.dataset.year ?? "";
-    const month = card.dataset.month ?? "";
-    if (currentTags.size > 0 && ![...currentTags].every((t) => tags.includes(t))) return false;
-    if (currentYear && year !== currentYear) return false;
-    if (currentMonth && month !== currentMonth) return false;
+    if (currentTag && !tags.includes(currentTag)) return false;
     return true;
   });
 }
@@ -101,7 +79,7 @@ function render() {
   cards.forEach((card) => (card.style.display = "none"));
   visible.forEach((card) => (card.style.display = "flex"));
 
-  postCount.textContent = total + "件の記事";
+  postCount.textContent = total + "件";
   noPosts.style.display = total === 0 ? "block" : "none";
 
   pagination.innerHTML = "";
@@ -132,39 +110,12 @@ function render() {
 
 document.querySelectorAll(".tag-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const tag = btn.dataset.tag ?? "";
-    if (tag === "") {
-      currentTags.clear();
-    } else {
-      if (currentTags.has(tag)) {
-        currentTags.delete(tag);
-      } else {
-        currentTags.add(tag);
-      }
-    }
-    document.querySelectorAll(".tag-btn").forEach((b) => {
-      const t = b.dataset.tag ?? "";
-      if (t === "") {
-        b.classList.toggle("active", currentTags.size === 0);
-      } else {
-        b.classList.toggle("active", currentTags.has(t));
-      }
-    });
+    document.querySelectorAll(".tag-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTag = btn.dataset.tag ?? "";
     currentPage = 1;
     render();
   });
-});
-
-document.getElementById("year-select").addEventListener("change", (e) => {
-  currentYear = e.target.value;
-  currentPage = 1;
-  render();
-});
-
-document.getElementById("month-select").addEventListener("change", (e) => {
-  currentMonth = e.target.value;
-  currentPage = 1;
-  render();
 });
 
 render();

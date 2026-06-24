@@ -22,3 +22,24 @@ export type MicroCMSPost = {
   image?: MicroCMSImage;
   body: string;
 };
+
+export type MicroCMSStatus = {
+  emoji?: string;
+  message: string;
+};
+
+export type MicroCMSCityMinePost = {
+  id: string;
+  title: string;
+  description?: string;
+  tags: string[];
+  draft?: boolean;
+  image?: MicroCMSImage;
+  body: string;
+};
+
+export type MicroCMSNews = {
+  id: string;
+  date: string;
+  message: string;
+};
